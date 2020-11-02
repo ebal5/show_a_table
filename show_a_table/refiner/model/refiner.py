@@ -15,7 +15,9 @@ class Candidate:
     Refinerが返す候補の個別要素を示すクラス．
     典型的には表示値とRefinerに戻す値は同じだが，SPARQLを利用するなどでかわる可能性がある
     """
-    pass
+    def __init__(self, key, ref=None):
+        self.key = key
+        self.ref = ref if ref else key
 
 
 class Candidates:
@@ -23,4 +25,6 @@ class Candidates:
     Refinerが返す候補一覧を保持するクラス
     あとついでにそのRefinerの責任範囲が終了したことを示す信号も持つ．
     """
-    pass
+    def __init__(self, cands, is_finished=False):
+        self.cands = cands
+        self.is_finished = is_finished

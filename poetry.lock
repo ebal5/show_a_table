@@ -1,5 +1,27 @@
 [[package]]
 category = "main"
+description = "serialize all of python"
+name = "dill"
+optional = false
+python-versions = ">=2.6, !=3.0.*"
+version = "0.3.2"
+
+[package.extras]
+graph = ["objgraph (>=1.7.2)"]
+
+[[package]]
+category = "main"
+description = "An ISO 8601 date/time/duration parser and formatter"
+name = "isodate"
+optional = false
+python-versions = "*"
+version = "0.6.0"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
+category = "main"
 description = "Easy japanese era tool"
 name = "japanera"
 optional = false
@@ -19,6 +41,94 @@ version = "0.1.0"
 
 [[package]]
 category = "main"
+description = "persistent caching to memory, disk, or database"
+name = "klepto"
+optional = false
+python-versions = "*"
+version = "0.1.9"
+
+[package.dependencies]
+dill = ">=0.3.2"
+pox = ">=0.2.8"
+
+[package.extras]
+archives = ["h5py (>=2.8.0)", "sqlalchemy (>=0.8.4)", "pandas (>=0.17.0)"]
+
+[[package]]
+category = "main"
+description = "utilities for filesystem exploration and automated builds"
+name = "pox"
+optional = false
+python-versions = "*"
+version = "0.2.8"
+
+[[package]]
+category = "main"
+description = "Python implementation of kakasi - kana kanji simple inversion library"
+name = "pykakasi"
+optional = false
+python-versions = "*"
+version = "2.0.1"
+
+[package.dependencies]
+klepto = "*"
+
+[package.extras]
+check = ["mypy (0.770)", "mypy-extensions (0.4.3)", "docutils", "check-manifest", "flake8", "readme-renderer", "pygments", "isort", "twine"]
+docs = ["sphinx (>=1.8)", "sphinx-intl", "sphinx-py3doc-enhanced-theme", "sphinx-rtd-theme"]
+test = ["pytest", "pytest-pep8", "pytest-cov", "coverage (>=5.0.1)"]
+
+[[package]]
+category = "main"
+description = "Python parsing module"
+name = "pyparsing"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "2.4.7"
+
+[[package]]
+category = "main"
+description = "RDFLib is a Python library for working with RDF, a simple yet powerful language for representing information."
+name = "rdflib"
+optional = false
+python-versions = "*"
+version = "5.0.0"
+
+[package.dependencies]
+isodate = "*"
+pyparsing = "*"
+six = "*"
+
+[package.extras]
+docs = ["sphinx (<3)", "sphinxcontrib-apidoc"]
+html = ["html5lib"]
+sparql = ["requests"]
+tests = ["html5lib", "networkx", "nose", "doctest-ignore-unicode"]
+
+[[package]]
+category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "1.15.0"
+
+[[package]]
+category = "main"
+description = "SPARQL Endpoint interface to Python"
+name = "sparqlwrapper"
+optional = false
+python-versions = "*"
+version = "1.8.5"
+
+[package.dependencies]
+rdflib = ">=4.0"
+
+[package.extras]
+keepalive = ["keepalive (>=0.5)"]
+
+[[package]]
+category = "main"
 description = "Python Library for Tom's Obvious, Minimal Language"
 name = "toml"
 optional = false
@@ -34,15 +144,51 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "3.7.4.3"
 
 [metadata]
-content-hash = "a8d0f4a667f18379da162138e2c381855f43f1f51ff57fadcb8be9313ea02948"
+content-hash = "56ee800e2fef57200cf8fb945e3ef648bf337ace861719c69700396024a9a83a"
 python-versions = "^3.8"
 
 [metadata.files]
+dill = [
+    {file = "dill-0.3.2.zip", hash = "sha256:6e12da0d8e49c220e8d6e97ee8882002e624f1160289ce85ec2cc0a5246b3a2e"},
+]
+isodate = [
+    {file = "isodate-0.6.0-py2.py3-none-any.whl", hash = "sha256:aa4d33c06640f5352aca96e4b81afd8ab3b47337cc12089822d6f322ac772c81"},
+    {file = "isodate-0.6.0.tar.gz", hash = "sha256:2e364a3d5759479cdb2d37cce6b9376ea504db2ff90252a2e5b7cc89cc9ff2d8"},
+]
 japanera = [
     {file = "Japanera-0.1.0.tar.gz", hash = "sha256:3fe9a6cf3e276ab56a39e72c401037fbf1d51c5b4e11e145f2038b52672e9faf"},
 ]
 kanjize = [
     {file = "kanjize-0.1.0.tar.gz", hash = "sha256:8f808b02acc8d2f2466792598460f2acf82aca49042f6b6ccf714ccd98e1cd29"},
+]
+klepto = [
+    {file = "klepto-0.1.9.zip", hash = "sha256:48a0b34938671e14b6be29454c94d5b57cb8934d4fff0970a96bad548bc48c9c"},
+]
+pox = [
+    {file = "pox-0.2.8.zip", hash = "sha256:621f3a912531d0c5c71f7d5fd4815b15bf5d0db5b4cea352df14f2ff6bc7c615"},
+]
+pykakasi = [
+    {file = "pykakasi-2.0.1-py3-none-any.whl", hash = "sha256:892ae012f563845687b8ed93c6cc595d31758765b5fa1871b310a8af5a1da3a3"},
+    {file = "pykakasi-2.0.1.tar.gz", hash = "sha256:f9d25e93a1fa76354e77c16f150e782399a508dfba3a95ad9840918eb6a3cc01"},
+]
+pyparsing = [
+    {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
+    {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
+]
+rdflib = [
+    {file = "rdflib-5.0.0-py3-none-any.whl", hash = "sha256:88208ea971a87886d60ae2b1a4b2cdc263527af0454c422118d43fe64b357877"},
+    {file = "rdflib-5.0.0.tar.gz", hash = "sha256:78149dd49d385efec3b3adfbd61c87afaf1281c30d3fcaf1b323b34f603fb155"},
+]
+six = [
+    {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
+    {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
+sparqlwrapper = [
+    {file = "SPARQLWrapper-1.8.5-py2-none-any.whl", hash = "sha256:357ee8a27bc910ea13d77836dbddd0b914991495b8cc1bf70676578155e962a8"},
+    {file = "SPARQLWrapper-1.8.5-py2.7.egg", hash = "sha256:17ec44b08b8ae2888c801066249f74fe328eec25d90203ce7eadaf82e64484c7"},
+    {file = "SPARQLWrapper-1.8.5-py3-none-any.whl", hash = "sha256:c7f9c9d8ebb13428771bc3b6dee54197422507dcc3dea34e30d5dcfc53478dec"},
+    {file = "SPARQLWrapper-1.8.5-py3.4.egg", hash = "sha256:8cf6c21126ed76edc85c5c232fd6f77b9f61f8ad1db90a7147cdde2104aff145"},
+    {file = "SPARQLWrapper-1.8.5.tar.gz", hash = "sha256:d6a66b5b8cda141660e07aeb00472db077a98d22cb588c973209c7336850fb3c"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},

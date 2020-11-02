@@ -7,6 +7,11 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+toml = "^0.10.1"
+japanera = "^0.1.0"
+Typing = "^3.7.4"
+sparqlwrapper = "^1.8.5"
+pykakasi = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"

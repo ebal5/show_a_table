@@ -1,13 +1,10 @@
-"""definition of basic refiner"""
+from typing import List, Tuple
 
 
 class Refiner:
-    """default refiner
 
-    used by not specific ENE's
-    """
-    def __init__(self, ene: str):
+    def __init__(self):
         pass
 
-    def get_query(self, state):
-        pass
+    def refine(choice: str = "") -> Tuple[bool, List[str]]:
+        return (False, [])

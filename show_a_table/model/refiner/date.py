@@ -1,4 +1,5 @@
 from importlib.resources import read_text
+
 import toml
 
 from .refiner import Refiner
@@ -23,6 +24,7 @@ class DateRangeRefiner(Refiner):
 
 class JustOneDateRefiner(Refiner):
     def __init__(self, data, start=None):
+        # TODO start を考慮する
         self._data = data
         self.year = ""
         self.month = ""

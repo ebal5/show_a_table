@@ -1,13 +1,32 @@
+from enum import Enum, auto
 from typing import List, Tuple
 
 
-class Refiner:
+class RefinerState(Enum):
+    CONTINUE = auto()
+    FINISH = auto()
+    ERROR = auto()
 
+
+class Refiner:
+    """
+    Refinerの基底クラス．これを単体で用いることはないであろう
+    """
     def __init__(self):
+        self.state = ""
         pass
 
-    def refine(choice: str = "") -> Tuple[bool, List[str]]:
-        return (False, [])
+    def refine(self, choice: str = ""):
+        return Candidates("PLACE HOLDER", ["SAMPLE", "CHOICE"], self, False)
+
+
+class CategoryRefiner:
+
+    def __init__(self):
+        self.categories = ["企業名", "空港名", "人名", "市区町村名", "化合物名"]
+
+    def refine(self, choice=""):
+        return Candidates()
 
 
 class Candidate:
@@ -56,17 +75,38 @@ class Candidates(list):
         Parameters
         ----------
         title : str
-        cands : List[Candidate]
+          絞り込みのタイトル
+        cands : List[Candidate/str]
+          候補値リスト．どちらかの型で統一される必要がある
         is_finished : bool
+          現在の属性について決定したならばTrue
 
         Raises
         ------
         ValueError
           cands の表示値に被りがある場合
         """
+        if type(cands[0]) is str:
+            cands = [Candidate(c) for c in cands]
         if not (len(cands) == len(set([c.key for c in cands]))):
             raise ValueError("候補値に被りがあります．")
         self.extend(cands)
         self.is_finished = is_finished
         self.title = title
         self.parent = parent
+
+    def spend(self, num_cands):
+        """
+        num_cands 分の要素を既に提示したものとする
+
+        Parameters
+        ----------
+        num_cands : int
+          消費した数．
+
+        Returns
+        -------
+        self : Candidates
+        """
+        del self[:num_cands]
+        return self

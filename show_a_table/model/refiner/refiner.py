@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import List, Tuple
 
 
 class RefinerState(Enum):
@@ -8,25 +7,71 @@ class RefinerState(Enum):
     ERROR = auto()
 
 
+class Categories(Enum):
+    COMPANY = "企業名"
+    AIRPORT = "空港名"
+    PERSON = "人名"
+    CITY = "市区町村名"
+    COMPOUND = "化合物名"
+
+    @classmethod
+    def value_of(cls, target_value):
+        for e in cls:
+            if e.value == target_value:
+                return e
+        return None
+
+
 class Refiner:
     """
     Refinerの基底クラス．これを単体で用いることはないであろう
     """
-    def __init__(self):
-        self.state = ""
-        pass
+    def __init__(self, attr_name=""):
+        self.state = RefinerState.CONTINUE
+        self.attr = attr_name
 
-    def refine(self, choice: str = ""):
-        return Candidates("PLACE HOLDER", ["SAMPLE", "CHOICE"], self, False)
+    def refine(self, choice=None):
+        """
+        Parameters
+        ----------
+        choice : Candidate
+          直前の選択
+
+        Returns
+        -------
+        Candidates or DQQuery
+          途中ならばCandidatesだし，終わったならDQQueryを返す
+        """
+        return Candidates("PLACE HOLDER", ["SAMPLE", "CHOICE"], self)
 
 
 class CategoryRefiner:
+    """
+    カテゴリ選択に関するRefiner
+    同時にルートRefinerとして各属性に関するQueryも保持する
+
+
+    Attributes
+    ----------
+    selected : Categories
+      選択されたカテゴリ
+    queries : DQQuery
+      実行するべきクエリのリスト
+    """
 
     def __init__(self):
-        self.categories = ["企業名", "空港名", "人名", "市区町村名", "化合物名"]
+        self.selected = None
+        self.queries = []
 
     def refine(self, choice=""):
-        return Candidates()
+        if choice:
+            cat = Categories.value_of(choice)
+            if cat:
+                self.selected = cat
+            else:
+                raise ValueError(f"{choice} は正しいカテゴリではありません")
+        else:
+            return Candidates("カテゴリの選択", self.categories, self, False)
 
 
 class Candidate:
@@ -47,6 +92,9 @@ class Candidate:
         self.ref = ref if ref else key
         self.obj = kwargs
 
+    def __str__(self):
+        return self.key
+
 
 class Candidates(list):
     """
@@ -62,13 +110,11 @@ class Candidates(list):
       その絞りこみのタイトル
     cands : List[Candidate]
       候補一覧
-    is_finished : bool
-      発行したRefinerの責任範囲が終了してるならばTrue．そうでなければFalse
     parent : Refiner
       発行元Refiner．結果の返し先
     """
 
-    def __init__(self, title, cands, parent, is_finished=False):
+    def __init__(self, title, cands, parent):
         """
         自身をcandsで初期化する
 
@@ -78,8 +124,6 @@ class Candidates(list):
           絞り込みのタイトル
         cands : List[Candidate/str]
           候補値リスト．どちらかの型で統一される必要がある
-        is_finished : bool
-          現在の属性について決定したならばTrue
 
         Raises
         ------
@@ -91,7 +135,6 @@ class Candidates(list):
         if not (len(cands) == len(set([c.key for c in cands]))):
             raise ValueError("候補値に被りがあります．")
         self.extend(cands)
-        self.is_finished = is_finished
         self.title = title
         self.parent = parent
 
@@ -111,13 +154,40 @@ class Candidates(list):
         del self[:num_cands]
         return self
 
+    def __str__(self):
+        cands = ", ".join([str(c) for c in self])
+        return f"title: {self.title}, cands: [{cands}]"
+
+
+class Priority(Enum):
+    """
+    クエリの優先度．HIGHESTならば真先に実行するべきだし，LOWESTならば最後で良い．
+    """
+    HIGHEST = auto()
+    HIGHER = auto()
+    HIGH = auto()
+    MIDDLE = auto()
+    LOW = auto()
+    LOWER = auto()
+    LOWEST = auto()
+
 
 class DQQuery:
     """
     DrQAに回すクエリを保持するクラス．
 
     これ自体は基底クラスとしての使用に留まり，実際は派生クラスが使われるはず
+
+    Attributes
+    ----------
+    priori : Priority
     """
+
+    def __init__(self, priori=None):
+        if priori and priori in Priority:
+            self.priori = priori
+        else:
+            self.priori = Priority.MIDDLE
 
     def exam(self, result):
         """
@@ -133,7 +203,7 @@ class DQQuery:
         """
         return False
 
-    def make_query(self, target):
+    def get_query(self, target):
         """
         Parameters
         ----------
@@ -159,7 +229,7 @@ class RegQuery(DQQuery):
       絞りのための正規表現オブジェクト
     """
 
-    def __init__(self, regex, gen_query):
+    def __init__(self, regex, gen_query, priori=None):
         """
         Parameters
         ----------
@@ -169,6 +239,7 @@ class RegQuery(DQQuery):
         gen_query : str -> str
           質問生成のための関数
         """
+        super().__init__(priori)
         self.reg = regex
         self.gen = gen_query
 
@@ -189,7 +260,7 @@ class FunQuery(DQQuery):
     gen : str -> str
     """
 
-    def __init__(self, refine, gen_query):
+    def __init__(self, refine, gen_query, priori=None):
         """
         Parameters
         ----------
@@ -198,6 +269,7 @@ class FunQuery(DQQuery):
         gen_query : str -> str
           質問文を生成する関数
         """
+        super().__init__(priori)
         self.refine = refine
         self.gen = gen_query
 

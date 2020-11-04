@@ -1,25 +1,27 @@
 from importlib.resources import read_text
-import toml
 from os import environ
-from SPARQLWrapper import SPARQLWrapper
 
+import toml
+from SPARQLWrapper import JSON, SPARQLWrapper
+
+import util
 
 from .refiner import Refiner
-import util
 
 
 class GeoRefiner(Refiner):
     def __init__(self):
         self._endpoint = environ.get("SPARQL_ENDPOINT", None) or \
-            "https://yago-knowledge.org/sparql/query"
+            "http://localhost:3030/yago4/query"
+        # "https://yago-knowledge.org/sparql/query"
         self._data = toml.loads(read_text(__package__, "geo.toml"))
         self._place = []
-        self._sparql = SPARQLWrapper(endpoint=self._endpoint, returnFormat='json')
+        self._sparql = SPARQLWrapper(self._endpoint)
+        self._sparql.setReturnFormat(JSON)
         self._buf = None
 
-    def refine(self, choice=""):
-        if not choice:
-            return (False, )
+    def refine(self, choice):
+        # TODO 実装
         return super().refine(choice)
 
     def _country(self, choice):

@@ -11,5 +11,5 @@ SELECT ?s ?l WHERE {
   FILTER NOT EXISTS {
     ?s schema:dissolutionDate ?d 
   }
-} limit 5
+}
 """

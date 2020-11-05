@@ -2,7 +2,7 @@
 name = "show_a_table"
 version = "0.1.0"
 description = "make a table using qa_system"
-authors = ["Shuichi Tani <muminn4@gmail.com>"]
+authors = ["eval <eval.scheme@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]

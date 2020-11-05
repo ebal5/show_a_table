@@ -2,7 +2,7 @@ from enum import Enum, auto
 from importlib.resources import read_text
 
 import toml
-from show_a_table.refiner.model import Candidates
+from show_a_table.refiner.model import Candidate, Candidates, KanaCandidates
 
 
 class FinishState(Enum):
@@ -61,8 +61,8 @@ class CandsPerformer:
             raise ValueError(f"{choice} は選択肢として正しくありません")
         elif callable(res):
             return res()
-        elif type(res) is str:
-            self.set_cands(self._refiners.refine(res))
+        elif type(res) is str or type(res) is Candidate:
+            self.set_cands(self._refiners[0].refine(res))
             return self.get_cands()
 
     def set_cands(self, cands):

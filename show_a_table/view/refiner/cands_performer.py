@@ -32,7 +32,6 @@ class CandsPerformer:
         self._cands = None      # 候補一覧
         self._expects = None
         self._max_cands = toml.loads(read_text(__package__, "config.toml"))["max_cands"]
-        # TODO category refiner の実装
         self._refiners = []
         self.set_cands(self._refiner[0].refine())
 

@@ -4,6 +4,8 @@ from importlib.resources import read_text
 
 import toml
 
+# from .date import DateRefiner
+# from .geo_refiner import GeoRefiner
 from .util import make_n_dict
 
 
@@ -49,36 +51,6 @@ class Refiner:
           途中ならばCandidatesだし，終わったならDQQueryを返す
         """
         return Candidates("PLACE HOLDER", ["SAMPLE", "CHOICE"], self)
-
-
-class CategoryRefiner(Refiner):
-    # TODO まじめに実装する
-    """
-    カテゴリ選択に関するRefiner
-    同時にルートRefinerとして各属性に関するQueryも保持する
-
-
-    Attributes
-    ----------
-    selected : Categories
-      選択されたカテゴリ
-    queries : DQQuery
-      実行するべきクエリのリスト
-    """
-
-    def __init__(self):
-        self.selected = None
-        self.queries = []
-
-    def refine(self, choice=""):
-        if choice:
-            cat = Categories.value_of(choice)
-            if cat:
-                self.selected = cat
-            else:
-                raise ValueError(f"{choice} は正しいカテゴリではありません")
-        else:
-            return Candidates("カテゴリの選択", self.categories, self, False)
 
 
 class Candidate:

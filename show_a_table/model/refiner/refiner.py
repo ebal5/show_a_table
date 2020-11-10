@@ -4,8 +4,6 @@ from importlib.resources import read_text
 
 import toml
 
-# from .date import DateRefiner
-# from .geo_refiner import GeoRefiner
 from .util import make_n_dict
 
 
@@ -137,6 +135,7 @@ class Candidates(list):
         cands = ", ".join([str(c) for c in self])
         return f"title: {self.title}, cands: [{cands}]"
 
+
 class KanaCandidates:
     """
     受け取ったcandsをカナによって事前振り分けした上でcandsから1つ選択する
@@ -180,7 +179,7 @@ class KanaCandidates:
         self._proposal = []
         self._cands_dict = None
 
-    def cands(self, num_cands=0):
+    def cands(self, num_cands=30):
         """
         num_cands個以下の選択肢を返す．
         0ならば全てを返す．

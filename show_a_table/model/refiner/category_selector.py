@@ -37,7 +37,15 @@ class CategorySelector:
 
     def attributes(self):
         """"""
-        return self._data["attributes"][self.cat.name].keys()
+        return list(self._data["attributes"][self.cat.name].keys())
+
+    def add_query(self, query):
+        """
+        Parameters
+        ----------
+        query : DQQuery
+        """
+        self.queries.append(query)
 
     def refiners(self, attr):
         """

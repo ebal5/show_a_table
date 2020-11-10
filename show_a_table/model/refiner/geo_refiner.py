@@ -11,8 +11,8 @@ class GeoRefiner(Refiner):
     def __init__(self, attr_name=""):
         super().__init__(attr_name)
         self._endpoint = environ.get("SPARQL_ENDPOINT", None) or \
-            "https://yago-knowledge.org/sparql/query"
-            # "http://localhost:3030/yago4/query"
+            "http://localhost:3030/yago4/query"
+            # "https://yago-knowledge.org/sparql/query"
         self._data = toml.loads(read_text(__package__, "geo.toml"))
         self._place = []
         self._sparql = SPARQLWrapper(self._endpoint)

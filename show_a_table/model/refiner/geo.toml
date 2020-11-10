@@ -17,7 +17,6 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?s ?l WHERE {{
   <{0}> schema:containsPlace ?s .
-  ?s rdf:type schema:Place .
   ?s rdfs:label ?l ;
   FILTER(LANG(?l) = 'ja') . 
 }}
@@ -27,3 +26,5 @@ SELECT ?s ?l WHERE {{
   # FILTER NOT EXISTS {
   #   ?s schema:dissolutionDate ?d 
   # }
+
+    # ?s rdf:type schema:Place .

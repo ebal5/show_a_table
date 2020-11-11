@@ -61,8 +61,8 @@ class CandsPerformer:
         # 何もない
         if not choice:
             self._cat_sel = CS.CategorySelector()
-            lst = [c.key for c in self._cat_sel.categories()]
-            self._expects = {c.key: c for c in self._cat_sel.categories()}
+            lst = self._cat_sel.categories()
+            self._expects = {c for c in lst}
             return ("カテゴリの選択", lst)
         # カテゴリ未選択 = `choice` はカテゴリ名
         if not self._cat:

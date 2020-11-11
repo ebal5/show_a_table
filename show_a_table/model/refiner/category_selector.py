@@ -24,13 +24,13 @@ class CategorySelector:
     def categories(self):
         if self.cat:
             raise RuntimeError("既にカテゴリ選択は終了しています")
-        return Candidates("カテゴリの選択", [c.value for c in Categories], self)
+        return [c.value for c in Categories]
 
     def set_category(self, cat):
         """
         Parameters
         ----------
-        cat : Candidate
+        cat : str
           確定したカテゴリ……？
         """
         self.cat = Categories.value_of(cat)

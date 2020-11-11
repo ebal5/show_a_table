@@ -73,7 +73,7 @@ class Candidate:
         return self.key
 
 
-class Candidates(list):
+class Candidates:
     """
     Refinerが返す候補一覧を保持するクラス
     あとついでにそのRefinerの責任範囲が終了したことを示す信号も持つ．
@@ -111,25 +111,57 @@ class Candidates(list):
             cands = [Candidate(c) for c in cands]
         if not (len(cands) == len(set([c.key for c in cands]))):
             raise ValueError("候補値に被りがあります．")
-        self.extend(cands)
+        self._expects = {c.key: c for c in cands}
+        self._lk = list(self._expects.keys())
         self.title = title
         self.parent = parent
+        self._last_idx = None
 
-    def spend(self, num_cands):
+    def cands(self, num_cands=30):
         """
-        num_cands 分の要素を既に提示したものとする
+        num_cands個以下の選択肢を返す．
+        0ならば全てを返す．
 
         Parameters
         ----------
         num_cands : int
-          消費した数．
 
         Returns
         -------
-        self : Candidates
+        List[str]
+          表示する候補のリスト
         """
-        del self[:num_cands]
-        return self
+        if len(self._lk) <= num_cands:
+            return self._lk
+        tmp = self._lk[:num_cands]
+        tmp.append("NEXT")
+        self._lk = self._lk[num_cands:]
+        return tmp
+
+    def select(self, num_cands, choice):
+        """
+        Parameters
+        ----------
+        num_cands : int
+          choice で確定しなかった場合の動作で，最大の選択肢個数を示す
+        choice : str
+          直前の選択肢郡から選んだ文字列
+
+        Returns
+        -------
+        Candidate or List[str]
+          確定したならばCandidateを，そうでなければList[str]で候補を提示する
+
+        Raises
+        -------
+        ValueError
+          if choice not in proposal
+        """
+        if choice == "NEXT":
+            return self.cands(num_cands)
+        if choice not in self._expects:
+            raise ValueError(f"{choice} is not in proposal")
+        return self._expects[choice]
 
     def __str__(self):
         cands = ", ".join([str(c) for c in self])

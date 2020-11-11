@@ -285,6 +285,70 @@ class KanaCandidates:
         return super().__str__()
 
 
+class NumCandidates:
+    """
+    数値に関する候補を提示して絞り込みの補助を行う
+    """
+    def __init__(self, title, start, end, parent):
+        """
+        Parameters
+        ----------
+        title : str
+        start : int
+        end : int
+        parent : Refiner
+        """
+        self.title = title
+        self.parent = parent
+        self._start = start
+        self._end = end
+        self._cands = [str(i) for i in range(10)]
+        self._cands.append("SKIP")
+        self._num = ""
+
+    def cands(self, num_cands=30):
+        """
+        num_cands個以下の選択肢を返す．
+        0ならば全てを返す．
+
+        Parameters
+        ----------
+        num_cands : int
+
+        Returns
+        -------
+        List[str]
+          表示する候補のリスト
+        """
+        # TODO start, end による制限
+        return self._cands
+
+    def select(self, num_cands, choice):
+        """
+        Parameters
+        ----------
+        num_cands : int
+          choice で確定しなかった場合の動作で，最大の選択肢個数を示す
+        choice : str
+          直前の選択肢郡から選んだ文字列
+
+        Returns
+        -------
+        Candidate or List[str]
+          確定したならばCandidateを，そうでなければList[str]で候補を提示する
+
+        Raises
+        -------
+        ValueError
+          if choice not in proposal
+        """
+        # TODO start, end による制限
+        if choice == "COMPLETE":
+            return Candidate(key=self._num)
+        self._num += "*" if choice == "SKIP" else choice
+        return self._cands + ["COMPLETE"]
+
+
 class Priority(Enum):
     """
     クエリの優先度．HIGHESTならば真先に実行するべきだし，LOWESTならば最後で良い．

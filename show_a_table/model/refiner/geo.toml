@@ -8,8 +8,23 @@ SELECT ?s ?l WHERE {
   ?s rdf:type schema:Country .
   ?s rdfs:label ?l ;
   FILTER(LANG(?l) = 'ja') . 
-  FILTER NOT EXISTS {
-    ?s schema:dissolutionDate ?d 
-  }
 }
 """
+
+other_place = """
+PREFIX schema: <http://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?s ?l WHERE {{
+  <{0}> schema:containsPlace ?s .
+  ?s rdfs:label ?l ;
+  FILTER(LANG(?l) = 'ja') . 
+}}
+"""
+
+# 消え去った Organization を省くコード
+  # FILTER NOT EXISTS {
+  #   ?s schema:dissolutionDate ?d 
+  # }
+
+    # ?s rdf:type schema:Place .

@@ -1,8 +1,5 @@
 from collections import OrderedDict
 from enum import Enum, auto
-from importlib.resources import read_text
-
-import toml
 
 from .util import make_n_dict
 

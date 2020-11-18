@@ -1,11 +1,11 @@
 import datetime
-from importlib.resources import read_text
 
 import toml
 from dateutil.parser import parse as datetime_parser
 from dateutil.parser._parser import ParserError
 
 from .refiner import Candidate, Candidates, FunQuery, Refiner, RegQuery
+from .util import read_text
 
 
 def _preprocess_date(result):
@@ -31,7 +31,7 @@ def _preprocess_date(result):
 class DateRefiner(Refiner):
     def __init__(self, attr_name):
         super().__init__(attr_name)
-        self._data = toml.loads(read_text(__package__, "date.toml"))
+        self._data = toml.loads(read_text(__file__, "date.toml"))
         self._refiner = None
 
     def refine(self, choice=None):

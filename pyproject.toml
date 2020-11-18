@@ -6,7 +6,7 @@ authors = ["eval <eval.scheme@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "==3.8.0"
 toml = "^0.10.1"
 japanera = "^0.1.0"
 Typing = "^3.7.4"

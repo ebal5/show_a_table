@@ -73,6 +73,8 @@ class CandsPerformer:
         # `refiner`が無い = 属性未選択 = `choice` は属性名
         if not self._refiner:
             # TODO choice == "完了" の処理
+            # => 実際の絞りこみ処理
+            # => まだむり
             if choice == "完了":
                 raise NotImplementedError("未実装")
             self._refiner = self._cat_sel.refiners(choice)

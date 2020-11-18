@@ -1,10 +1,9 @@
-from importlib.resources import read_text
-
 import toml
 
 from .date import DateRefiner
 from .geo_refiner import GeoRefiner
 from .refiner import Candidates, Categories
+from .util import read_text
 
 
 class CategorySelector:
@@ -19,7 +18,7 @@ class CategorySelector:
         self.cat = None
         self.attr = None
         self.queries = []
-        self._data = toml.loads(read_text(__package__, "config.toml"))
+        self._data = toml.loads(read_text(__file__, "config.toml"))
 
     def categories(self):
         if self.cat:

@@ -1,10 +1,10 @@
 from enum import Enum, auto
-from importlib.resources import read_text
 
 import toml
 
 from ...model.refiner import category_selector as CS
 from ...model.refiner import refiner
+from ...model.refiner.util import read_text
 
 
 class FinishState(Enum):
@@ -32,7 +32,7 @@ class CandsPerformer:
 
     def __init__(self):
         self._cands = None      # 候補一覧
-        self._max_cands = toml.loads(read_text(__package__, "config.toml"))["max_cands"]
+        self._max_cands = toml.loads(read_text(__file__, "config.toml"))["max_cands"]
         self._refiner = None
         self._cat_sel = None
         self._expects = None
@@ -73,6 +73,8 @@ class CandsPerformer:
         # `refiner`が無い = 属性未選択 = `choice` は属性名
         if not self._refiner:
             # TODO choice == "完了" の処理
+            # => 実際の絞りこみ処理
+            # => まだむり
             if choice == "完了":
                 raise NotImplementedError("未実装")
             self._refiner = self._cat_sel.refiners(choice)

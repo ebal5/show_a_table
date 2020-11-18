@@ -1,10 +1,10 @@
-from importlib.resources import read_text
 from os import environ
 
 import toml
 from SPARQLWrapper import JSON, SPARQLWrapper
 
 from .refiner import Candidate, FunQuery, KanaCandidates, Refiner
+from .util import read_text
 
 
 class GeoRefiner(Refiner):
@@ -13,7 +13,7 @@ class GeoRefiner(Refiner):
         self._endpoint = environ.get("SPARQL_ENDPOINT", None) or \
             "http://localhost:3030/yago4/query"
             # "https://yago-knowledge.org/sparql/query"
-        self._data = toml.loads(read_text(__package__, "geo.toml"))
+        self._data = toml.loads(read_text(__file__, "geo.toml"))
         self._place = []
         self._sparql = SPARQLWrapper(self._endpoint)
         self._sparql.setReturnFormat(JSON)

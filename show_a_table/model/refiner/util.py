@@ -1,5 +1,6 @@
 import os
 from itertools import groupby
+from enum import Enum
 
 import pykakasi
 import toml
@@ -93,3 +94,11 @@ def read_text(dirname, filename):
     fn = os.path.join(dirname, filename)
     with open(fn) as f:
         return f.read()
+
+
+class AutoNumber(Enum):
+    def __new__(cls):
+        value = len(cls.__members__) + 1
+        obj = object.__new__(cls)
+        obj._value_ = value
+        return obj

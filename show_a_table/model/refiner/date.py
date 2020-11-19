@@ -108,7 +108,8 @@ class JustOneDateRefiner(Refiner):
             return self._day(choice)
         elif self._solo:
             # ここらへん，unreachableじゃね？
-            return FunQuery(self._solo_exam(), lambda tgt: f"{tgt}の{self.attr}は?")
+            return FunQuery(self._solo_exam(),
+                            lambda tgt: "{tgt}の{attr}は?".format(tgt=tgt, attr=self.attr))
         else:
             # TODO Rangeの一部として動く場合
             pass
@@ -129,7 +130,7 @@ class JustOneDateRefiner(Refiner):
                 return Candidates("日付けの選択/年の選択/紀元前", _yd["bce"])
             else:
                 idx = _yd["origin"].index(choice)
-                return Candidates("日付けの選択/年の選択", _yd[f"y{idx - 1}"], self)
+                return Candidates("日付けの選択/年の選択", _yd["y{n}".format(n=idx-1)], self)
         elif choice in _yd["bce"]:
             # TODO: implementation of BCE refiner
             pass
@@ -154,7 +155,8 @@ class JustOneDateRefiner(Refiner):
         _dd = self._data["day"]
         if "-" in choice:
             idx = _dd["origin"].index(choice)
-            return Candidates("日付けの選択/日にちの選択", _dd[f"d{idx}"], self)
+            return Candidates("日付けの選択/日にちの選択", _dd["d{idx}".format(idx=idx)], self)
         else:
             self.day = choice
-            return FunQuery(self._solo_exam(), lambda tgt: f"{tgt}の{self.attr}は?")
+            return FunQuery(self._solo_exam(),
+                            lambda tgt: "{tgt}の{attr}は?".format(tgt=tgt, attr=self.attr))

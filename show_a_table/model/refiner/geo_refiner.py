@@ -12,7 +12,6 @@ class GeoRefiner(Refiner):
         super().__init__(attr_name)
         self._endpoint = environ.get("SPARQL_ENDPOINT", None) or \
             "http://localhost:3030/yago4/query"
-            # "https://yago-knowledge.org/sparql/query"
         self._data = toml.loads(read_text(__file__, "geo.toml"))
         self._place = []
         self._sparql = SPARQLWrapper(self._endpoint)
@@ -32,7 +31,8 @@ class GeoRefiner(Refiner):
             return self._other_place(choice)
         else:
             # TODO Queryの実装
-            fq = FunQuery(self._make_exam(), lambda tgt: f"{tgt}の{self.attr}は?")
+            fq = FunQuery(self._make_exam(),
+                          lambda tgt: "{tgt}の{attr}は?".format(tgt=tgt, attr=self.attr))
             print(self._place)
             return fq
 

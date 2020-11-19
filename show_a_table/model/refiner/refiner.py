@@ -1,13 +1,13 @@
 from collections import OrderedDict
-from enum import Enum, auto
+from enum import Enum
 
-from .util import make_n_dict
+from .util import make_n_dict, AutoNumber
 
 
-class RefinerState(Enum):
-    CONTINUE = auto()
-    FINISH = auto()
-    ERROR = auto()
+class RefinerState(AutoNumber):
+    CONTINUE = ()
+    FINISH = ()
+    ERROR = ()
 
 
 class Categories(Enum):
@@ -157,12 +157,12 @@ class Candidates:
         if choice == "NEXT":
             return self.cands(num_cands)
         if choice not in self._expects:
-            raise ValueError(f"{choice} is not in proposal")
+            raise ValueError("{choice} is not in proposal".format(choice=choice))
         return self._expects[choice]
 
     def __str__(self):
         cands = ", ".join([str(c) for c in self])
-        return f"title: {self.title}, cands: [{cands}]"
+        return "title: {title}, cands: [{cands}]".format(title=self.title, cands=cands)
 
 
 class KanaCandidates:
@@ -346,17 +346,17 @@ class NumCandidates:
         return self._cands + ["COMPLETE"]
 
 
-class Priority(Enum):
+class Priority(AutoNumber):
     """
     クエリの優先度．HIGHESTならば真先に実行するべきだし，LOWESTならば最後で良い．
     """
-    HIGHEST = auto()
-    HIGHER = auto()
-    HIGH = auto()
-    MIDDLE = auto()
-    LOW = auto()
-    LOWER = auto()
-    LOWEST = auto()
+    HIGHEST = ()
+    HIGHER = ()
+    HIGH = ()
+    MIDDLE = ()
+    LOW = ()
+    LOWER = ()
+    LOWEST = ()
 
 
 class DQQuery:

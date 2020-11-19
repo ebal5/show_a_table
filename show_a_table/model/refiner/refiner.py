@@ -163,7 +163,7 @@ class Candidates:
         return self._expects[choice]
 
     def __str__(self):
-        cands = ", ".join([str(c) for c in self])
+        cands = ", ".join([str(c) for c in sorted(self._expects.keys())])
         return "title: {title}, cands: [{cands}]".format(title=self.title, cands=cands)
 
 
@@ -324,7 +324,7 @@ class NumCandidates:
              for idx in range(0, len(self._cands), width)]
         )
         if self._skippable:
-            self._proposal["SKIP"] = Candidate("*")
+            self._proposal["SKIP"] = Candidate("SKIP", ref="*")
             self._proposal.move_to_end("SKIP")
 
     def _mk_next(self, ncands):
@@ -334,7 +334,7 @@ class NumCandidates:
         else:
             tps = [(str(c), c) for c in self._cands]
             if self._skippable:
-                tps.append(("SKIP", Candidate("*")))
+                tps.append(("SKIP", Candidate("SKIP", ref="*")))
             if len(tps) > ncands:
                 tps.insert(ncands-1, ("NEXT", "NEXT"))
             self._last = OrderedDict(tps[ncands:])

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import sys
 import math
 from enum import Enum
 
@@ -290,22 +291,54 @@ class NumCandidates:
     """
     数値に関する候補を提示して絞り込みの補助を行う
     """
-    def __init__(self, title, start, end, parent):
+    def __init__(self, title, start, end, parent, skippable=False):
         """
         Parameters
         ----------
         title : str
         start : int
+          開始点．含まれる
         end : int
+          終点．含まれる
         parent : Refiner
+        skippable : bool = False
+          Trueなら選択肢にSKIPが追加され，その選択をSKIPできる
         """
         self.title = title
         self.parent = parent
         self._start = start
         self._end = end
-        self._cands = [str(i) for i in range(10)]
-        self._cands.append("SKIP")
+        self._skippable = skippable
         self._num = ""
+        self._n_cands = 0
+        self._last = None
+
+    def _mk_range(self, ncands):
+        self._cands = [i for i in range(self._start, self._end+1)]
+        width = math.ceil(len(self._cands) / ncands)
+        if self._skippable:
+            width -= 1
+        self._proposal = OrderedDict(
+            [("{s}-{e}".format(s=self._cands[idx], e=self._cands[idx:idx+width][-1]),
+              self._cands[idx:idx+width])
+             for idx in range(0, len(self._cands), width)]
+        )
+        if self._skippable:
+            self._proposal["SKIP"] = Candidate("*")
+            self._proposal.move_to_end("SKIP")
+
+    def _mk_next(self, ncands):
+        self._cands = [i for i in range(self._start, self._end+1)]
+        if self._last:
+            self._proposal = self._last
+        else:
+            tps = [(str(c), c) for c in self._cands]
+            if self._skippable:
+                tps.append(("SKIP", Candidate("*")))
+            if len(tps) > ncands:
+                tps.insert(ncands-1, ("NEXT", "NEXT"))
+            self._last = OrderedDict(tps[ncands:])
+            self._proposal = OrderedDict(tps[:ncands])
 
     def cands(self, num_cands=30):
         """
@@ -321,8 +354,12 @@ class NumCandidates:
         List[str]
           表示する候補のリスト
         """
-        # TODO start, end による制限
-        return self._cands
+        if (self._end - self._start) > 2*num_cands:
+            self._mk_range(num_cands)
+        else:
+            self._mk_next(num_cands)
+        retl = list(self._proposal.keys())
+        return retl
 
     def select(self, num_cands, choice):
         """
@@ -343,11 +380,22 @@ class NumCandidates:
         ValueError
           if choice not in proposal
         """
-        # TODO start, end による制限
-        if choice == "COMPLETE":
-            return Candidate(key=self._num)
-        self._num += "*" if choice == "SKIP" else choice
-        return self._cands + ["COMPLETE"]
+        if choice not in self._proposal:
+            raise ValueError("{c} is not in proposal".format(c=choice))
+        ret = self._proposal[choice]
+        if isinstance(ret, Candidate):
+            return ret
+        elif type(ret) is list:
+            self._start = ret[0]
+            self._end = ret[-1]
+            return self.cands(num_cands)
+        elif choice == "NEXT":
+            return self.cands(num_cands)
+        elif type(ret) == int:
+            return Candidate(choice)
+        else:
+            print(type(ret), ret, file=sys.stderr)
+            raise RuntimeError("UNREACHABLE BLOCK")
 
 
 class Priority(AutoNumber):

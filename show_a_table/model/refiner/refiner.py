@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import math
 from enum import Enum
 
 from .util import make_n_dict, AutoNumber
@@ -225,7 +226,6 @@ class KanaCandidates:
         # 辞書がないなら作る
         if self._cands_dict is None:
             pl = [(c.ref, c.key) for c in self._cands]
-            # TODO 完了は辞書から外す or 最初に表示
             self._cands_dict = {
                 kana: [Candidate(key=l, ref=s, kana=k) for (s, l, k) in val]
                 for kana, val in make_n_dict(pl, num_cands).items()
@@ -238,13 +238,15 @@ class KanaCandidates:
             self._proposal = tmpl
             return tmpl
         elif len(self._cands_dict.keys()) <= num_cands:
-            self._proposal = list(self._cands_dict.keys())
+            self._proposal = list(sorted(self._cands_dict.keys()))
             return self._proposal
         else:
-            tmpl = list(self._cands_dict.keys())
+            tmpl = list(sorted(self._cands_dict.keys()))
             self._last = tmpl[num_cands:]
             tmpl = tmpl[:num_cands]
             tmpl.append("NEXT")
+            if "完了" in self._cands_dict.keys() and "完了" not in tmpl:
+                tmpl.append("完了")
             self._proposal = tmpl
             return tmpl
 
@@ -271,6 +273,8 @@ class KanaCandidates:
             return self.cands(num_cands)
         if choice not in self._proposal:
             raise ValueError("not in proposal")
+        if choice == "完了":
+            return Candidate("完了")
         if self._kana == "":
             self._kana = choice
             self._proposal = OrderedDict([(c.key, c) for c in self._cands_dict[choice]])

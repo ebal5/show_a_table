@@ -63,6 +63,10 @@ def make_n_dict(_list, max_cands=0):
     """
     if max_cands == 0:
         max_cands = toml.loads(read_text(__file__, "config.toml"))["max_cands"]
+    has_complete = False
+    if "完了" in {s for s, _ in _list}:
+        _list.remove(("完了", "完了"))
+        has_complete = True
     kks = pykakasi.kakasi()
     lst = [(s, l, "".join([d["kana"] for d in kks.convert(l)])) for s, l in _list]
     dic = _gbh(lst, 2, 0)
@@ -74,6 +78,8 @@ def make_n_dict(_list, max_cands=0):
     #         dic = _merge_dict(dic, {f"{k}{_k}": v for _k, v in _gbh(dic[k], key=2, idx=idx).items()}, k)
     #     checked = [k for k, v in dic.items() if len(v) > max_cands]
     #     idx += 1
+    if has_complete:
+        dic["完了"] = [("完了", "完了", "完了")]
     return dic
 
 

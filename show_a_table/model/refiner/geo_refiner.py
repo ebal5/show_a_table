@@ -30,7 +30,6 @@ class GeoRefiner(Refiner):
             self._place.append(choice.key)
             return self._other_place(choice)
         else:
-            # TODO Queryの実装
             fq = FunQuery(self._make_exam(),
                           lambda tgt: "{tgt}の{attr}は?".format(tgt=tgt, attr=self.attr))
             print(self._place)
@@ -41,7 +40,7 @@ class GeoRefiner(Refiner):
         def exam(result):
             if len(self._place) == 1:
                 # TODO 国名のみの選択の場合
-                pass
+                raise NotImplementedError("国名のみの場合はまだ実装されていない")
             else:
                 needs = self._place[1:]
                 return all([place in result for place in needs])

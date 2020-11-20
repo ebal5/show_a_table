@@ -189,6 +189,8 @@ class JustOneDateRefiner(Refiner):
         """"""
         if type(choice) is str:
             choice = Candidate(choice)
+        if choice.key == "SKIP":
+            choice = Candidate("SKIP", ref="*")
         if not self.year:
             return self._year(choice)
         elif not self.month:

@@ -1,15 +1,15 @@
-from collections import OrderedDict
-import sys
 import math
-from enum import Enum
+import sys
+from collections import OrderedDict
+from enum import Enum, auto
 
-from .util import make_n_dict, AutoNumber
+from .util import make_n_dict
 
 
-class RefinerState(AutoNumber):
-    CONTINUE = ()
-    FINISH = ()
-    ERROR = ()
+class RefinerState(Enum):
+    CONTINUE = auto()
+    FINISH = auto()
+    ERROR = auto()
 
 
 class Categories(Enum):
@@ -159,7 +159,7 @@ class Candidates:
         if choice == "NEXT":
             return self.cands(num_cands)
         if choice not in self._expects:
-            raise ValueError("{choice} is not in proposal".format(choice=choice))
+            raise ValueError(f"{choice} is not in proposal")
         return self._expects[choice]
 
     def __str__(self):
@@ -398,17 +398,17 @@ class NumCandidates:
             raise RuntimeError("UNREACHABLE BLOCK")
 
 
-class Priority(AutoNumber):
+class Priority(Enum):
     """
     クエリの優先度．HIGHESTならば真先に実行するべきだし，LOWESTならば最後で良い．
     """
-    HIGHEST = ()
-    HIGHER = ()
-    HIGH = ()
-    MIDDLE = ()
-    LOW = ()
-    LOWER = ()
-    LOWEST = ()
+    HIGHEST = auto()
+    HIGHER = auto()
+    HIGH = auto()
+    MIDDLE = auto()
+    LOW = auto()
+    LOWER = auto()
+    LOWEST = auto()
 
 
 class DQQuery:

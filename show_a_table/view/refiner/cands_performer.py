@@ -1,13 +1,15 @@
+from enum import Enum, auto
+
 import toml
 
 from ...model.refiner import category_selector as CS
 from ...model.refiner import refiner
-from ...model.refiner.util import read_text, AutoNumber
+from ...model.refiner.util import read_text
 
 
-class FinishState(AutoNumber):
-    COMPLETE = ()
-    ESCAPE = ()
+class FinishState(Enum):
+    COMPLETE = auto()
+    ESCAPE = auto()
 
 
 class CandsPerformer:

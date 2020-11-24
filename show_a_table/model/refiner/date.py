@@ -1,9 +1,16 @@
 import datetime
+import re
+import sys
 
 from dateutil.parser import parse as datetime_parser
 from dateutil.parser._parser import ParserError
+from japanera import Japanera
 
-from .refiner import Candidate, Candidates, FunQuery, Refiner, NumCandidates, DQQuery
+from .refiner import (Candidate, Candidates, DQQuery, FunQuery, NumCandidates,
+                      Refiner)
+
+_td1 = str.maketrans("０１２３４５６７８９（）", "0123456789()")
+_td2 = str.maketrans("年月日", "---")
 
 
 def _preprocess_date(result):
@@ -18,12 +25,49 @@ def _preprocess_date(result):
     date
       result を datetime の date として表現したもの
     """
+    result = result.translate(_td1)
+    mmdd = r'((\d{1,2})月((\d{1,2})日)?)?'
+    eraname = r'(天平)?[^\d]{2}((\d{1,2})|元)年?'
+    years = r'(\d{1,4})年?'
+    mt = re.match(r'({})(\({}\))?'.format(years, eraname)+mmdd, result)
+    if mt:
+        gs = mt.groups()
+        result = "{}{}".format(gs[0], gs[6] or '').translate(_td2)
+    mt = re.match(r'({})(\({}\))?'.format(eraname, years)+mmdd, result)
+    if mt:
+        gs = mt.groups()
+        if mt.groups()[3]:
+            # 元年ではない．数値で年が示される
+            y = gs[0].replace(gs[3], str.zfill(gs[3], 2))
+        else:
+            y = gs[0]
+        if gs[6] and gs[8]:
+            m = int(gs[6][:gs[6].index("月")])
+            d = int(gs[6][gs[6].index("月")+1:gs[6].index("日")])
+            fmt = "%-E%-kO年%m月%d日"
+            result = "{}{:0>2}月{:0>2}日".format(y, m, d)
+        elif gs[6]:
+            m = int(gs[6][:gs[6].index("月")])
+            fmt = "%-E%-kO年%m月"
+            result = "{}{:0>2}月".format(y, m)
+        else:
+            fmt = "%-E%-kO年"
+            result = y
+        jn = Japanera()
+        res = jn.strptime(result, fmt)
+        if res:
+            return res[0].date()
+        else:
+            raise RuntimeError("Cannot parse as date '{}'".format(result))
     try:
-        return datetime_parser(result).date()
+        if result.endswith("-"):
+            date = datetime_parser(result[:-1]).date()
+        else:
+            date = datetime_parser(result).date()
+        return date
     except ParserError as e:
-        # TODO あきらめのモックアップを削除
-        print(e)
-        return datetime.date.today()
+        print(e, file=sys.stderr)
+        raise RuntimeError("Cannot parse as date '{}'".format(result)) from e
 
 
 class DateRefiner(Refiner):

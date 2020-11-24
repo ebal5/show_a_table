@@ -13,6 +13,42 @@ _td1 = str.maketrans("０１２３４５６７８９（）", "0123456789()")
 _td2 = str.maketrans("年月日", "---")
 
 
+def _from_mtgrp_to_str(gs, wy: int, y: int, fy: int, wmd: int, wd: int, m: int, d: int):
+    """
+    マッチオブジェクトのグループリストから結果を返す
+
+    Parameters
+    ----------
+    gs : [str]
+      マッチ結果のグループリスト
+    wy : int
+      年を示す位置番号
+    y : int
+      年の数値を示す位置番号
+    fy : int
+      年のフィルサイズ(2 or 4 と思われ)
+    wmd : int
+      月日全体の位置番号
+    wd : int
+      日全体の位置番号
+    m : int
+      月を示す位置番号
+    d : int
+      日を示す位置番号
+
+    Returns
+    -------
+    datestr : str
+      yyyy年mm月dd日 あるいは 元号XX年mm月dd日形式の文字列
+    """
+    return "{year}{month}{day}".format(
+        year=gs[wy].replace(gs[y], gs[y].zfill(fy)),
+        month=(gs[wmd].replace(gs[wd], "")
+               if gs[wd] else gs[wmd]).replace(gs[m], gs[m].zfill(2)) if gs[wmd] else "",
+        day=gs[wd].replace(gs[d], gs[d].zfill(2)) if gs[wd] else ""
+    )
+
+
 def _preprocess_date(result):
     """
     Parameters
@@ -31,43 +67,30 @@ def _preprocess_date(result):
     years = r'(\d{1,4})年?'
     mt = re.match(r'({})(\({}\))?'.format(years, eraname)+mmdd, result)
     if mt:
-        gs = mt.groups()
-        result = "{}{}".format(gs[0], gs[6] or '').translate(_td2)
+        result = _from_mtgrp_to_str(mt.groups(), 0, 1, 4, 6, 8, 7, 9).translate(_td2)
+        try:
+            if result.endswith("-"):
+                date = datetime_parser(result[:-1]).date()
+            else:
+                date = datetime_parser(result).date()
+            return date
+        except ParserError as e:
+            print(e, file=sys.stderr)
+            raise RuntimeError("Cannot parser as date '{}'".format(result)) from e
     mt = re.match(r'({})(\({}\))?'.format(eraname, years)+mmdd, result)
     if mt:
-        gs = mt.groups()
-        if mt.groups()[3]:
-            # 元年ではない．数値で年が示される
-            y = gs[0].replace(gs[3], str.zfill(gs[3], 2))
-        else:
-            y = gs[0]
-        if gs[6] and gs[8]:
-            m = int(gs[6][:gs[6].index("月")])
-            d = int(gs[6][gs[6].index("月")+1:gs[6].index("日")])
-            fmt = "%-E%-kO年%m月%d日"
-            result = "{}{:0>2}月{:0>2}日".format(y, m, d)
-        elif gs[6]:
-            m = int(gs[6][:gs[6].index("月")])
-            fmt = "%-E%-kO年%m月"
-            result = "{}{:0>2}月".format(y, m)
-        else:
-            fmt = "%-E%-kO年"
-            result = y
-        jn = Japanera()
-        res = jn.strptime(result, fmt)
-        if res:
-            return res[0].date()
-        else:
-            raise RuntimeError("Cannot parse as date '{}'".format(result))
-    try:
-        if result.endswith("-"):
-            date = datetime_parser(result[:-1]).date()
-        else:
-            date = datetime_parser(result).date()
-        return date
-    except ParserError as e:
-        print(e, file=sys.stderr)
-        raise RuntimeError("Cannot parse as date '{}'".format(result)) from e
+        result = _from_mtgrp_to_str(mt.groups(), 0, 3, 2, 6, 8, 7, 9)
+    mt = re.match(r'\(({})\){}'.format(eraname, mmdd), result)
+    if mt:
+        result = _from_mtgrp_to_str(mt.groups(), 0, 3, 2, 4, 6, 5, 7)
+    jn = Japanera()
+    fmt = "%-E%-kO年"
+    fmt += "%m月%d日" if "月" in result and "日" in result else "%m月" if "月" in result else ""
+    res = jn.strptime(result, fmt)
+    if res:
+        return res[0].date()
+    else:
+        raise RuntimeError("Cannot parse as date '{}' by '{}'".format(result, fmt))
 
 
 class DateRefiner(Refiner):
@@ -215,7 +238,11 @@ class JustOneDateRefiner(Refiner):
 
     def _solo_exam(self):
         def exam(result):
-            res_date = _preprocess_date(result)
+            try:
+                res_date = _preprocess_date(result)
+            except Exception as e:
+                print(e, file=sys.stderr)
+                return False
             if all([self.year != "*",
                     self.month != "*",
                     self.day != "*"]):

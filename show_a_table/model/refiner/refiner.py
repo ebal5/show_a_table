@@ -423,6 +423,7 @@ class DQQuery:
     """
 
     def __init__(self, priori=None):
+        self.attr = ""
         if priori and priori in Priority:
             self.priori = priori
         else:

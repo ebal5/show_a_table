@@ -2,6 +2,7 @@ from enum import Enum, auto
 
 import toml
 
+from ...model.dqw import dqwrapper
 from ...model.refiner import category_selector as CS
 from ...model.refiner import refiner
 from ...model.refiner.util import read_text
@@ -73,10 +74,10 @@ class CandsPerformer:
         # `refiner`が無い = 属性未選択 = `choice` は属性名
         if not self._refiner:
             # TODO choice == "完了" の処理
-            # => 実際の絞りこみ処理
-            # => まだむり
+            # たぶんこれじゃだめなので
             if choice == "完了":
-                raise NotImplementedError("未実装")
+                res = dqwrapper.run(self._cat_sel)
+                return ("結果", [v["title"] for v in res.values()])
             self._refiner = self._cat_sel.refiners(choice)
             self._cands = self._refiner.refine()
             return (self._cands.title, self._cands.cands())

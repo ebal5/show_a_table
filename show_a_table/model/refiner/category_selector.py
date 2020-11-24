@@ -44,6 +44,7 @@ class CategorySelector:
         ----------
         query : DQQuery
         """
+        query.attr = self.attr
         self.queries.append(query)
 
     def refiners(self, attr):
@@ -59,6 +60,7 @@ class CategorySelector:
         Refiner
           attr に基づいたRefiner
         """
+        self.attr = attr
         key = self._data["attributes"][self.cat.name][attr]
         if key == "Geo":
             return GeoRefiner(attr)

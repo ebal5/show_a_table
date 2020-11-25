@@ -13,6 +13,9 @@ Typing = "^3.7.4"
 sparqlwrapper = "^1.8.5"
 pykakasi = "^2.0.1"
 python-dateutil = "^2.8.1"
+mecab-python3 = "^1.0.3"
+unidic-lite = "^1.0.7"
+fire = "^0.3.1"
 
 [tool.poetry.dev-dependencies]
 yapf = "^0.30.0"

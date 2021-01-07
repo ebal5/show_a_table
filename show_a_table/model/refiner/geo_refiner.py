@@ -41,6 +41,7 @@ class GeoRefiner(Refiner):
         def exam(result):
             if len(self._place) == 1:
                 # TODO 国名のみの選択の場合
+                # 項目の先頭何かが国名に含まれるエントリの存在を確認すれば良いかな？
                 raise NotImplementedError("国名のみの場合はまだ実装されていない")
             else:
                 needs = self._place[1:]

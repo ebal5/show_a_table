@@ -42,7 +42,7 @@ def _from_mtgrp_to_str(gs, wy: int, y: int, fy: int, wmd: int, wd: int, m: int, 
       yyyy年mm月dd日 あるいは 元号XX年mm月dd日形式の文字列
     """
     return "{year}{month}{day}".format(
-        year=gs[wy].replace(gs[y], gs[y].zfill(fy)),
+        year=gs[wy].replace(gs[y], gs[y].zfill(fy)) if gs[y] else gs[wy],
         month=(gs[wmd].replace(gs[wd], "")
                if gs[wd] else gs[wmd]).replace(gs[m], gs[m].zfill(2)) if gs[wmd] else "",
         day=gs[wd].replace(gs[d], gs[d].zfill(2)) if gs[wd] else ""
@@ -171,7 +171,13 @@ class DateRangeRefiner(Refiner):
                         _s[idx] <= item, _e[idx] >= item)
 
         def exam(result):
-            res_date = _preprocess_date(result)
+            res_date = None
+            try:
+                res_date = _preprocess_date(result)
+            except RuntimeError as e:
+                print(e, file=sys.stderr)
+            if not res_date:
+                return False
             y = flgs(0, res_date.year)
             m = flgs(1, res_date.month)
             d = flgs(2, res_date.day)

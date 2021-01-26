@@ -33,6 +33,43 @@ _predictor = Predictor(
 _predictor.cuda()
 
 
+def _get_title_from_text(text):
+    ptn = " - Wikipedia Dump 20171103"
+    for line in text.splitlines():
+        if line.strip().endswith(ptn):
+            return line[:-len(ptn)]
+    return "NOTHING FOUND"
+
+
+def _make_questions_from_ds(name, query, ids=None, titles=None):
+    """
+    Parameters
+    ----------
+    name: str
+      name of Category in UpperCamelCase
+    query: DQQuery
+
+    Returns
+    -------
+    exs : [(str, str, str, str)]
+      context, query, title, wiki_id
+    """
+    datapath = path.join(_datadir, f"datasets/PLAIN/{name}")
+    exs = []
+    for fn in glob.iglob(path.join(datapath, "*.txt")):
+        wid = fn[:-4]
+        if ids and wid not in ids:
+            continue
+        with open(fn) as f:
+            text = f.read()
+        title = _get_title_from_text(text)
+        if titles and title not in titles:
+            continue
+        q = query.get_query(title)
+        exs.append((text, q, title, wid))
+    return exs
+
+
 def _make_questions(ds, query, ids=None, titles=None):
     """
     Parameters
@@ -63,7 +100,7 @@ def _make_questions(ds, query, ids=None, titles=None):
     return exs
 
 
-def _update(store, qg, ds, batch_size=6):
+def _update(store, qg, ds, batch_size=6, whole=False):
     """
     Parameters
     ----------
@@ -75,7 +112,10 @@ def _update(store, qg, ds, batch_size=6):
     -------
     store : {str: {"title": str, "attrs": {str: [str]}}}
     """
-    questions = _make_questions(ds, qg, ids=set(store))
+    if whole:
+        questions = _make_questions_from_ds(ds, qg, ids=set(store))
+    else:
+        questions = _make_questions(ds, qg, ids=set(store))
     batches = [questions[idx:idx+batch_size] for idx in range(0, len(questions), batch_size)]
     for batch in batches:
         results = _predictor.predict_batch([b[:2] for b in batch], top_n=1)
